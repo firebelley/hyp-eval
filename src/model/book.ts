@@ -1,4 +1,4 @@
-import { IsString, Length } from "class-validator";
+import { IsString, Length } from 'class-validator';
 
 export class Book {
   @IsString()
@@ -8,4 +8,4 @@ export class Book {
   @IsString()
   @Length(2)
   author: string;
-};
+}
