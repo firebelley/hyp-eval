@@ -9,9 +9,6 @@ export class AppService {
     const trimmedTitle = book.title.trim();
     const trimmedAuthor = book.author.trim();
 
-    // I could have used validation at the controller level with a validation pipe
-    // but I figured doing the validation here will catch any issues wherever records are created.
-    // In an ideal scenario, we'd leverage the ORM to enforce constraints before inserting records.
     if (trimmedTitle.length < 1) {
       throw new Error('Title must have at least 1 character.');
     }
