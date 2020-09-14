@@ -33,7 +33,7 @@ describe('AppController (e2e)', () => {
       .expect(book);
   });
 
-  it('/create POST throws 409 for duplicate resource', async () => {
+  it('/create (POST) throws 400 for duplicate resource', async () => {
     const book = makeBook();
     await request(app.getHttpServer())
       .post('/create')
@@ -41,7 +41,19 @@ describe('AppController (e2e)', () => {
       .expect(201)
       .expect(book);
 
-    return request(app.getHttpServer()).post('/create').send(book).expect(409);
+    return request(app.getHttpServer()).post('/create').send(book).expect(400);
+  });
+
+  it('/create (POST) throws 400 for title constraint failure', async () => {
+    const book = makeBook();
+    book.title = '';
+    await request(app.getHttpServer()).post('/create').send(book).expect(400);
+  });
+
+  it('/create (POST) throws 400 for author constraint failure', async () => {
+    const book = makeBook();
+    book.author = 'j';
+    await request(app.getHttpServer()).post('/create').send(book).expect(400);
   });
 
   it('/ (GET) with records', async () => {

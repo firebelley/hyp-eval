@@ -4,7 +4,7 @@ import {
   Post,
   Body,
   Query,
-  ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Book } from './model/book';
@@ -23,10 +23,9 @@ export class AppController {
       return this.appService.create(book);
     } catch (e) {
       // Could use any number of 4xx responses here.
-      // There seems to be no set agreement on the proper response code for a POST
-      // that would create a duplicate resource.
-      // I chose Conflict 409 because that seemed most appropriate for this scenario.
-      throw new ConflictException(e.message);
+      // I chose BadRequest 400 because there are several different constraints
+      // that can cause creation to fail.
+      throw new BadRequestException(e.message);
     }
   }
 }

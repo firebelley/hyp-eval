@@ -42,6 +42,32 @@ describe('AppService', () => {
       const result = subject.create(bookToCreate);
       expect(result.title).toEqual(newTitle);
     });
+
+    it('should throw error for duplicate record', () => {
+      const bookToCreate = makeBook();
+      subject.create(bookToCreate);
+      expect(() => {
+        subject.create(bookToCreate);
+      }).toThrowError(
+        `Book with title '${bookToCreate.title}' already exists.`,
+      );
+    });
+
+    it('should throw error for small title', () => {
+      const bookToCreate = makeBook();
+      bookToCreate.title = '';
+      expect(() => {
+        subject.create(bookToCreate);
+      }).toThrowError('Title must have at least 1 character.');
+    });
+
+    it('should throw error for small author name', () => {
+      const bookToCreate = makeBook();
+      bookToCreate.author = 'j';
+      expect(() => {
+        subject.create(bookToCreate);
+      }).toThrowError('Author must have at least 2 characters.');
+    });
   });
 
   describe('find by author', () => {

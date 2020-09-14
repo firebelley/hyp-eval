@@ -6,10 +6,22 @@ export class AppService {
   private readonly database: Book[] = [];
 
   public create(book: Book): Book {
+    const trimmedTitle = book.title.trim();
+    const trimmedAuthor = book.author.trim();
+
+    // I could have used validation at the controller level with a validation pipe
+    // but I figured doing the validation here will catch any issues wherever records are created.
+    // In an ideal scenario, we'd leverage the ORM to enforce constraints before inserting records.
+    if (trimmedTitle.length < 1) {
+      throw new Error('Title must have at least 1 character.');
+    }
+    if (trimmedAuthor.length < 2) {
+      throw new Error('Author must have at least 2 characters.');
+    }
+
     // Ideally we'd want to use a unique ID like an ISBN
     // for indentifying the same book within the DB.
     // Checking against an arbitrary string value is generally very brittle.
-    const trimmedTitle = book.title.trim();
     if (
       this.database.some(
         (book) => book.title.toLowerCase() === trimmedTitle.toLowerCase(),
@@ -25,7 +37,7 @@ export class AppService {
       // but I personally prefer to create new copies of objects that
       // are being modified.
       ...book,
-      author: book.author.trim(),
+      author: trimmedAuthor,
       title: trimmedTitle,
     };
     this.database.push(bookToInsert);
