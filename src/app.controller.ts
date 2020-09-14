@@ -1,40 +1,32 @@
-import { Controller, Get, Post, Body, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  ConflictException,
+} from '@nestjs/common';
+import { AppService } from './app.service';
+import { Book } from './model/book';
 @Controller()
 export class AppController {
-  private db = [];
+  constructor(private readonly appService: AppService) {}
 
   @Get()
-  find(@Query('search') input?) {
-    if (!input) {
-      return this.db.sort((a, b) => {
-        if (a.title < b.title) {
-          return 1;
-        }
-        if (a.title > b.title) {
-          return -1;
-        }
-        return 0;
-      });
-    }
-    return this.db
-      .filter((x) => x.author === input)
-      .sort((a, b) => {
-        if (a.title < b.title) {
-          return 1;
-        }
-        if (a.title > b.title) {
-          return -1;
-        }
-        return 0;
-      });
+  findByAuthor(@Query('author') author?: string): Book[] {
+    return this.appService.findByAuthor(author);
   }
 
   @Post('create')
-  create(@Body() input) {
-    // don't allow duplicates
-    if (this.db.some((x) => x.title === input.title)) {
-      return false;
+  create(@Body() book: Book): Book {
+    try {
+      return this.appService.create(book);
+    } catch (e) {
+      // Could use any number of 4xx responses here.
+      // There seems to be no set agreement on the proper response code for a POST
+      // that would create a duplicate resource.
+      // I chose Conflict 409 because that seemed most appropriate for this scenario.
+      throw new ConflictException(e.message);
     }
-    return this.db.push(input);
   }
 }
