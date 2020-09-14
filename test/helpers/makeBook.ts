@@ -3,7 +3,7 @@ import * as faker from 'faker';
 
 export function makeBook(): Book {
   return {
-    title: faker.random.words(),
+    title: faker.random.uuid(),
     author: `${faker.name.firstName()} ${faker.name.lastName()}`,
   };
 }
